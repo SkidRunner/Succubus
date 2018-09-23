@@ -1,0 +1,30 @@
+struct input
+{
+	float4 position : POSITION;   // glVertex
+	float2 uv		: TEXCOORD0;  // glTexCoord
+};
+
+struct output
+{
+	float4 position		: POSITION;		// position in view space
+	float2 uv			: TEXCOORD0;
+};
+
+output vertexfunction( input IN, uniform float lensnumber, uniform float3 SunPosition,uniform float4x4 WorldCamProj )
+{
+	output OUT;
+	float4 sunCam = mul(WorldCamProj, float4(SunPosition, 1));
+	float2 sunWinPos = float2(sunCam.x/sunCam.w, sunCam.y/sunCam.w);
+	float2 sunfromcenter = float2(0, 0) - sunWinPos;
+	float lenghtInBetween = length(sunfromcenter);
+	float offset = lensnumber * (lenghtInBetween/3.0) * 2.0;
+	float2 direction = normalize(sunfromcenter);
+	float2 startPosition = sunWinPos + (direction * offset);
+	
+	
+	OUT.position = IN.position;
+	OUT.position.xy += startPosition;
+	OUT.uv = IN.uv;
+
+	return OUT;	
+}

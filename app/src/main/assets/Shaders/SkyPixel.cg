@@ -1,0 +1,57 @@
+struct input
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float2 uv			: TEXCOORD0;
+	float3 sunpos		: COLOR0;
+	float3 posWrld		: COLOR1;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+float3 extrude(float3 p){
+	return 2.0 * (p - 0.5);
+}
+
+output pixelfunction( input IN,
+					  uniform sampler2D diffuseTexture: TEXUNIT0,
+					  uniform sampler2D skyTexture: TEXUNIT1,
+					  uniform float a_Top)
+{
+	output OUT;
+	float4 skycolor = {0,0,0,0};
+	
+	
+	float l = (extrude(IN.sunpos).y * 2.1) - 0.12;
+	float2 uvpos;
+	uvpos.x = IN.uv.y;
+	if(a_Top > 0){//if we are drawing the top skybox always the most top pixel from atmosphere texture
+		uvpos.x = 1.0;
+	}
+	uvpos.y = 0;
+	float4 col1 = tex2D( skyTexture, uvpos);
+	uvpos.y = 0.5;
+	float4 col2 = tex2D( skyTexture, uvpos);
+	skycolor += lerp(col2, col1, abs(l));
+	skycolor.xyz += tex2D(diffuseTexture, IN.uv).xyz;
+	
+	if(l < 0){
+		l *= -1.0;
+		l *= 0.8;
+		l = 1.0-l;
+		skycolor.xyz *= l;
+	}
+	
+	float3 sundistance = extrude(IN.sunpos) - extrude(IN.posWrld);
+	float distToSun = length(sundistance);
+	if(distToSun < 0.1){
+		float grad = clamp(1.0 - (distToSun*10.0), 0, 1);
+		skycolor += float4(1.0,1.0,1.0,1.0)*grad;
+	}
+	
+	OUT.color = skycolor;
+	
+	return OUT;
+}

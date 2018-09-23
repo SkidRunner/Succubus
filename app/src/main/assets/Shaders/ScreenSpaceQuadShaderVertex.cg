@@ -1,0 +1,21 @@
+struct input
+{
+	float4 position : POSITION;   // glVertex
+	float2 uv		: TEXCOORD0;
+};
+
+struct output
+{
+	float4 position		: POSITION;
+	float2 uv			: TEXCOORD0;
+};
+
+output vertexfunction( input IN )
+{
+	output OUT;
+	
+	OUT.position = IN.position;	
+	OUT.uv = IN.uv;
+
+	return OUT;	
+}

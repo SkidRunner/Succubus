@@ -1,0 +1,25 @@
+struct input
+{
+	float4 position : POSITION;   // glVertex, position in world space
+	float2 uv		: TEXCOORD0;  // texture UV's
+	float3 normal	: NORMAL;
+};
+
+struct output
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float2 uv			: TEXCOORD0;
+	float3 normal		: TEXCOORD1;
+};
+
+
+output vertexfunction( input IN )
+{
+	output OUT;
+	
+	OUT.position = IN.position;
+	OUT.uv = IN.uv;
+	OUT.normal = IN.normal;
+
+	return OUT;
+}

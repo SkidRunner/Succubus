@@ -1,0 +1,20 @@
+struct input
+{
+	float4 position : POSITION;   // glVertex
+	float2 uv		: TEXCOORD0;  // glTexCoord
+};
+
+struct output
+{
+	float4 position		: POSITION;		// position in view space
+	float2 uv			: TEXCOORD0;
+};
+
+output vertexfunction( input IN, uniform float4x4 WorldCamProj )
+{
+	output OUT;
+	OUT.position = mul( WorldCamProj, IN.position );
+	OUT.uv = IN.uv;
+
+	return OUT;	
+}

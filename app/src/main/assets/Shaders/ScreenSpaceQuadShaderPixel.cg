@@ -1,0 +1,19 @@
+struct input
+{
+	float4 position		: POSITION;
+	float2 uv			: TEXCOORD0;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+output pixelfunction( input IN, uniform sampler2D texture: TEX0 )
+{
+	output OUT;
+
+	OUT.color.rgb = tex2D( texture, IN.uv );
+
+	return OUT;
+}

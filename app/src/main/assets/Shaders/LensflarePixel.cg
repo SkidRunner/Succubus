@@ -1,0 +1,21 @@
+struct input
+{
+	float4 position		: POSITION;		// position in view space
+	float2 uv			: TEXCOORD0;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+output pixelfunction( input IN, uniform sampler2D mainTexture: TEX0, uniform float amountAlpha )
+{
+	output OUT;
+	OUT.color = tex2D( mainTexture, IN.uv );
+	if(OUT.color.a > 0){
+		OUT.color.a -= (1.0-(amountAlpha / 20150.0));
+	}
+
+	return OUT;
+}

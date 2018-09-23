@@ -1,0 +1,37 @@
+struct input
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float4 color		: COLOR;
+	float4 pos			: TEXCOORD0;	// position in world space (not projected)
+	float3 normal		: TEXCOORD1;
+	float2 uv			: TEXCOORD2;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+output pixelfunction( input IN, uniform float4x4 worldCam, uniform float4 lightPos, uniform float3 lightColor, uniform sampler2D texture: TEX0 )
+{
+	output OUT;
+
+	float4 lightPosInCamSpace = mul( worldCam, lightPos );
+	
+	float4 color = tex2D( texture, IN.uv ) * IN.color;
+	float3 normal = normalize( IN.normal );
+	
+	float3 N = normal;
+	float3 L = normalize( lightPosInCamSpace - IN.pos );
+ 	float lambertFactor = max( dot( normal, L ) , 0 );
+	float3 V = normalize( -IN.pos );
+	float3 H = normalize( L + V );
+	float4 specular = pow( max( dot( N, H ), 0 ), 100 );
+
+	float ambient = 0.3;
+	
+	OUT.color.rgb = color * ambient + color * (lambertFactor * lightColor) + (specular * lightColor);
+
+	return OUT;
+}
+

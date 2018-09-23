@@ -1,0 +1,5 @@
+Material Default Sky : Materials/Definitions/ProceduralSky.j3md {
+     MaterialParameters {
+         NormalScale : 1 1 1
+     }
+}

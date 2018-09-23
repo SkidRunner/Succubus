@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.lessvoid.com/nifty-gui">
+	
+	<useStyles filename="nifty-default-styles.xml" />
+	<useControls filename="nifty-default-controls.xml" />
+	
+	<screen id="start">
+		<layer id="background" childLayout="center" backgroundColor="#222f">
+			<effect>
+				<onEndScreen name="fade" timeType="exp" factor="3.1416" start="#ff" end="#00" />
+			</effect>
+			<image id="logo" filename="Interface/Logo/Monkey.png" width="512px" height="512px" />
+		</layer>
+	</screen>
+	
+	<screen id="main">
+		<layer id="background" childLayout="center">
+			
+		</layer>
+	</screen>
+	
+</nifty>

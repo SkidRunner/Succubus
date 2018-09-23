@@ -1,0 +1,47 @@
+struct input
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float2 uv			: TEXCOORD0;
+	float3 posWnd		: TEXCOORD1;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+
+
+output pixelfunction( input IN,
+					  uniform sampler2D diffuseTexture: TEXUNIT0,
+					  uniform sampler2D pertTexture: TEXUNIT1,
+					  uniform sampler2D alphaTexture: TEXUNIT2,
+					  uniform float offset)
+{
+	output OUT;
+	
+	float2 backBufferUV;
+	backBufferUV.x = (IN.posWnd.x / IN.posWnd.z + 1.0f)/2;
+	backBufferUV.y = (IN.posWnd.y / IN.posWnd.z + 1.0f)/2;
+	
+	
+	float2 pertUV = IN.uv;
+	pertUV.y += offset;
+	float2 perturbTexel = tex2D( pertTexture, pertUV ).rg;
+	perturbTexel = (perturbTexel * 2.0) - 1.0; // now it's a vector from -1 to 1
+	perturbTexel = backBufferUV + (perturbTexel/128.0);
+	
+	/*
+	float4 alphaHeat= tex2D( alphaTexture, IN.uv);
+	if(alphaHeat.a > 0){
+		OUT.color = tex2D( diffuseTexture, perturbTexel );
+		OUT.color.a = alphaHeat.a;
+	}else{
+		OUT.color = tex2D( diffuseTexture, backBufferUV);
+	}
+	*/
+	OUT.color = tex2D( diffuseTexture, perturbTexel );
+	OUT.color.a = tex2D( alphaTexture, IN.uv).a;
+	
+	return OUT;
+}

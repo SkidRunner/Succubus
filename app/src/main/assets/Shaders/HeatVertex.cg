@@ -1,0 +1,24 @@
+struct input
+{
+	float4 position : POSITION;   // glVertex, position in world space
+	float2 uv		: TEXCOORD0;  // texture UV's
+};
+
+struct output
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float2 uv			: TEXCOORD0;
+	float3 posWnd		: TEXCOORD1;
+};
+
+
+output vertexfunction( input IN , uniform float4x4 WorldCamProj)
+{
+	output OUT;
+	
+	OUT.position = mul(WorldCamProj, IN.position);
+	OUT.uv = IN.uv * -1.0;
+	OUT.posWnd = OUT.position.xyw;
+	
+	return OUT;
+}

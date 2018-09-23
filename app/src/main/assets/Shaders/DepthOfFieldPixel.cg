@@ -1,0 +1,89 @@
+struct input
+{
+	float4 position		: POSITION;		// (projected) position in screen space
+	float2 uv			: TEXCOORD0;
+	float3 normal		: TEXCOORD1;
+};
+
+struct output 
+{
+	float4 color : COLOR;
+};
+
+float LinearDepth(float depth){
+	float Near = 0.01;
+	float Far = 500.0;
+	
+	//(Far * (depth-Near) * depth) / (Far - Near))
+	//float z = Far * (depth - Near) / (Far-Near);
+	
+	return ((Far * (depth-Near) * depth) / (Far - Near));
+}
+
+
+output pixelfunction( input IN,
+					  uniform sampler2D diffuseTexture: TEXUNIT0,
+					  uniform sampler2D depthTexture: TEXUNIT1,
+					  uniform sampler2D pertTexture: TEXUNIT2,
+					  uniform float shaderOn)
+{
+	output OUT;
+	
+	float4 pixel = tex2D( diffuseTexture, IN.uv );
+	
+	if(shaderOn < 1.0){
+		OUT.color = pixel;
+		return OUT;
+	}
+	
+	float depth = tex2D( depthTexture, IN.uv );
+	float focusDepth = 0.75;
+	float focusRange = 0.95;
+	
+	depth = LinearDepth(depth);
+	float BlurinessFactor = (depth - focusDepth) / (focusRange * 0.5);
+	BlurinessFactor = clamp( BlurinessFactor, 0, 1.0 );
+	
+	/*
+	OUT.color.x = BlurinessFactor;
+	OUT.color.y = BlurinessFactor;
+	OUT.color.z = BlurinessFactor;
+	//OUT.color.a = LinearDepth(depth);
+	*/
+	
+	float4 final = pixel;
+	float div512 = 0.001953125;//->1.0 / 512.0(the size of our render buffer)
+	float blursize = 6.0 * BlurinessFactor;
+	float total = 1;
+	
+	float div16 = 0.0625;//-> 1.0f / 16.0(the size of our perturbation texture)
+	
+	for(int i=0; i < 16; i++){
+		float2 uvp;
+		uvp.x = float(i)*div16;
+		uvp.y = 0;
+		
+		//semi-random points
+		float2 perturbTexel = tex2D( pertTexture, uvp ).rg;
+		perturbTexel = (perturbTexel * 2.0) - 1.0; // now it's a vector from -1 to 1
+		perturbTexel = IN.uv + ((perturbTexel*div512)*blursize);//divide by 512 to make it one pixel on color buffer(0->1)
+		
+		//weight
+		float weight =1.0;
+		float sampleDepth = tex2D( depthTexture, perturbTexel );
+		sampleDepth = LinearDepth(sampleDepth);
+		float sampleFactor = (sampleDepth - focusDepth) / (focusRange * 0.5);
+		sampleFactor = clamp( sampleFactor, 0.0, 1.0 );
+		if(sampleFactor < BlurinessFactor){
+			weight = sampleFactor;
+		}
+		
+		//color
+		final += tex2D( diffuseTexture, perturbTexel ) * weight;
+		total += weight;
+	}
+	
+	OUT.color = final / total;
+	
+	return OUT;
+}
