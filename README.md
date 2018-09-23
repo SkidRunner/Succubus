@@ -13,8 +13,8 @@ Succubus action simulation game.
 ## Running Locally
 
 ## Supporting Technologies
-### Engine
 * [jMonkeyEngine](http://jmonkeyengine.org/)
+* [NiftyGUI](https://github.com/nifty-gui/nifty-gui)
 
 ## Contributors
 
