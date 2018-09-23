@@ -15,16 +15,22 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Box;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
 import de.lessvoid.nifty.Nifty;
+
 import java.util.concurrent.Callable;
-import com.jme3.scene.shape.Box;
 
 public class MainApplication extends SimpleApplication {
 
 	public static final ColorRGBA Gray = new ColorRGBA(0x22 / 255.0f, 0x22 / 255.0f, 0x22 / 255.0f, 1.0f);
 	public static final ColorRGBA Yellow = new ColorRGBA(0xFF / 255.0f, 0xCC / 255.0f, 0x00 / 255.0f, 1.0f);
+
+    public static void main(String[] args) {
+        MainApplication app = new MainApplication();
+        app.start();
+    }
 
 	@Override
 	public void simpleInitApp() {
