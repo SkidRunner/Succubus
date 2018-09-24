@@ -161,7 +161,7 @@ public class MainApplication extends SimpleApplication {
 		Geometry skybox = ((Geometry)(SkyFactory.createSky(assetManager, skyWest, skyEast, skyNorth, skySouth, skyTop, skyBottom)));
 		TextureCubeMap skyTexture = ((TextureCubeMap)(skybox.getMaterial().getTextureParam("Texture").getTextureValue()));
 		defaultMaterial.setTexture("EnvMap", skyTexture);
-		defaultMaterial.setVector3("FresnelParams", new Vector3f(0.5f, 2.0f, 2.0f));
+		defaultMaterial.setVector3("FresnelParams", new Vector3f(1.0f, 6.0f, 3.5f));
 		skybox.setName("Skybox");
 		scene.attachChild(skybox);
 		
